@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<!--
+  EduAdventure: Misi Menjelajahi Teknologi Digital
+  Koding & Kecerdasan Artifisial Kelas V - Bab 2
+  CARA MENJALANKAN: simpan sebagai index.html, lalu buka dengan browser (klik dua kali). Tanpa internet, tanpa instal.
+  CARA MENGEDIT SOAL: cari "const LV" di bagian <script>. Tiap soal: t (mc/tf/order/match), g (topik), q, o/i/pairs, a, h (petunjuk), e (pembahasan).
+  Progres disimpan di localStorage perangkat ini (hanya skor, pengaturan, refleksi). Tidak ada jaringan, tidak ada data pribadi.
+-->
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EduAdventure: Misi Menjelajahi Teknologi Digital</title>
+<style>
+:root{--ink:#1b2a4a;--sky:#d9f1f7;--teal:#167a77;--org:#f28c28;--yel:#ffd45e;--pur:#9b8bd0;--grn:#2e9e68;--red:#d4454f;--card:#fff}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;font-family:"Trebuchet MS","Arial Rounded MT Bold",system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at 12% 18%,#fff 0 40px,transparent 41px),radial-gradient(circle at 20% 16%,#fff 0 30px,transparent 31px),radial-gradient(circle at 85% 30%,#fff 0 36px,transparent 37px),linear-gradient(#bfe8f3,#e8f8ee 70%,#cdeccb);min-height:100vh;line-height:1.5}
+body.big{font-size:120%}
+body.big{background:#fff}
+body.big .card,body.big .btn{border-color:#000}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:var(--ink);color:#fff}
+.bar .brand{font-size:1.1rem}.sp{flex:1}
+.bar button{background:#fff;color:var(--ink);border:2px solid #fff;border-radius:999px;padding:8px 14px;font:inherit;font-size:.85rem;cursor:pointer;min-height:44px}
+.bar button[aria-pressed=false]{background:transparent;color:#fff}
+main{max-width:860px;margin:0 auto;padding:18px 14px 60px}
+.scr[hidden]{display:none}
+h1,h2{margin:.2em 0;line-height:1.2;font-weight:900}
+h1{font-size:2.1rem}h2{font-size:1.5rem}
+h1:focus,h2:focus{outline:none}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:24px;padding:18px;box-shadow:0 6px 0 var(--ink);margin:14px 0}
+.center{text-align:center}
+.btn{display:inline-block;min-height:52px;padding:12px 24px;margin:6px;font:inherit;font-weight:800;font-size:1.05rem;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:999px;box-shadow:0 4px 0 var(--ink);cursor:pointer;transition:transform .1s}
+.btn.pri{background:var(--org)}.btn.grn{background:#8fe0b0}
+.btn:hover:not(:disabled){transform:translateY(-2px)}.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,select:focus-visible,textarea:focus-visible{outline:4px solid #7a3cff;outline-offset:2px}
+.mascot{display:inline-block;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.bubble{background:#fff;border:3px solid var(--ink);border-radius:22px;padding:14px 18px;display:inline-block;max-width:560px;text-align:left}
+.row{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
+.nodes{display:grid;gap:14px}
+.node{display:flex;gap:14px;align-items:center;text-align:left;width:100%;padding:16px;background:#fff;border:3px solid var(--ink);border-radius:24px;box-shadow:0 5px 0 var(--ink);font:inherit;color:var(--ink);cursor:pointer;min-height:84px}
+.node:disabled{background:#e4e7ee;cursor:not-allowed}
+.node .ic{font-size:2.2rem}.node small{display:block}
+.nodes .node:nth-child(1){background:#fff3c9}.nodes .node:nth-child(2){background:#dff6e8}.nodes .node:nth-child(3){background:#ece6ff}
+.nodes .node:disabled{background:#e4e7ee}
+.qtop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:800}
+.prog{height:16px;background:#fff;border:3px solid var(--ink);border-radius:99px;overflow:hidden;margin:8px 0}
+.prog i{display:block;height:100%;width:0;background:var(--org);transition:width .3s}
+.opt,.chip{display:block;width:100%;text-align:left;margin:8px 0;padding:14px 16px;min-height:52px;font:inherit;color:var(--ink);background:#f6fbff;border:3px solid var(--ink);border-radius:18px;cursor:pointer}
+.opt:hover:not(:disabled),.chip:hover:not(:disabled){background:var(--yel)}
+.opt.right{background:#bff0cf;border-color:var(--grn)}.opt.wrong{background:#ffd5d8;border-color:var(--red);text-decoration:line-through}
+.opt:disabled,.chip:disabled{cursor:default;opacity:.75}.opt.right:disabled{opacity:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips .chip{width:auto;margin:4px 0}
+.seq{list-style:none;padding:0;margin:8px 0;min-height:60px;border:3px dashed var(--pur);border-radius:18px;padding:8px}
+.seq li button{width:100%;text-align:left;margin:4px 0;padding:10px 14px;font:inherit;color:var(--ink);background:#ece6ff;border:2px solid var(--ink);border-radius:14px;min-height:44px;cursor:pointer}
+.seq.ok li button{background:#bff0cf}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin:10px 0}
+@media(max-width:560px){.mrow{grid-template-columns:1fr}}
+select{font:inherit;color:var(--ink);padding:12px;border:3px solid var(--ink);border-radius:14px;background:#fff;min-height:48px;width:100%}
+.msg{margin-top:12px;padding:12px 14px;border-radius:16px;border:3px solid var(--ink);background:#fff8dc}
+.msg:empty{display:none}.msg.good{background:#dff6e8}.msg.soft{background:#fff1e0}
+.stars{font-size:2rem;letter-spacing:4px}
+.badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:8px 14px;border:3px solid var(--ink);border-radius:99px;background:#fff}
+.badge.off{opacity:.45;filter:grayscale(1)}
+.tag{margin:10px 0}.tag .prog{height:14px;margin:4px 0}.tag .prog i{background:var(--grn)}
+textarea{width:100%;font:inherit;color:var(--ink);border:3px solid var(--ink);border-radius:16px;padding:10px;min-height:90px}
+ul.clean{padding-left:1.2em}
+.calm *,.calm *::before{animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <button id="bHome" aria-label="Kembali ke beranda">🏠 Beranda</button>
+  <b class="brand">EduAdventure</b><span class="sp"></span>
+  <button id="bSnd" aria-pressed="true">🔊 Suara</button>
+  <button id="bCalm" aria-pressed="false">🐢 Kurangi gerak</button>
+  <button id="bBig" aria-pressed="false">Aa Mudah dibaca</button>
+</header>
+<main>
+<section id="title" class="scr center">
+  <div class="card">
+    <div class="mascot" data-s="150"></div>
+    <h1 tabindex="-1">EduAdventure: Misi Menjelajahi Teknologi Digital</h1>
+    <p>Bersama Koka si robot, selesaikan 3 misi seru! Pelajaran Koding dan Kecerdasan Artifisial, Kelas V, Bab 2.</p>
+    <button class="btn pri" id="bStart">▶ Mulai</button>
+    <button class="btn" id="bHelp">❓ Petunjuk</button>
+    <button class="btn" id="bGoal">🎯 Tujuan Belajar</button>
+    <p><button class="btn" id="bWipe" style="min-height:44px;font-size:.85rem">🗑 Hapus progres tersimpan</button></p>
+  </div>
+</section>
+
+<section id="help" class="scr" hidden>
+  <div class="card"><h2 tabindex="-1">❓ Petunjuk</h2>
+    <ol>
+      <li>Pilih Mulai, lalu buka misi di peta. Selesaikan level 1 untuk membuka level 2, dan seterusnya.</li>
+      <li>Setiap level punya 5 tantangan. Urutan soal dan pilihan jawaban diacak.</li>
+      <li>Ada 4 jenis tantangan: pilihan ganda, benar/salah, mencocokkan, dan menyusun urutan.</li>
+      <li>Jawaban salah? Tenang, kamu punya <b>satu kesempatan mencoba lagi</b>. Tombol 💡 Petunjuk membantumu.</li>
+      <li>Poin tiap soal: 10 (benar di percobaan pertama), 8 (pakai petunjuk), 5 (benar di percobaan kedua). Tiap soal hanya dihitung satu kali.</li>
+      <li>Di akhir, tulis refleksimu. Skor permainan bukan satu-satunya ukuran kemampuanmu.</li>
+    </ol>
+    <p>Tombol di atas bisa mengatur suara, mengurangi gerak, dan membuat tampilan lebih mudah dibaca.</p>
+    <button class="btn pri" data-go="title">⬅ Kembali</button>
+  </div>
+</section>
+
+<section id="goal" class="scr" hidden>
+  <div class="card"><h2 tabindex="-1">🎯 Tujuan Belajar</h2>
+    <p>Setelah bermain, aku bisa:</p>
+    <ul class="clean">
+      <li>Menjelaskan apa itu teknologi digital dan bedanya dengan teknologi analog.</li>
+      <li>Mengenali perangkat keras dan perangkat lunak pada komputer.</li>
+      <li>Menyebutkan teknologi digital di rumah, sekolah, dan sekitarku.</li>
+      <li>Menghubungkan teknologi digital dengan kegiatan sehari-hari lewat alur masukan, proses, luaran.</li>
+      <li>Menjelaskan manfaat dan dampak teknologi digital, termasuk cara menjaga informasi pribadi.</li>
+    </ul>
+    <button class="btn pri" data-go="title">⬅ Kembali</button>
+  </div>
+</section>
+
+<section id="story" class="scr center" hidden>
+  <div class="card"><h2 tabindex="-1">📖 Cerita Misi</h2>
+    <div class="row"><div class="mascot" data-s="130"></div>
+    <div class="bubble">Halo, aku <b>Koka</b>! Lampu-lampu di Kota Digital padam karena 3 Kunci Pengetahuan hilang. Maukah kamu membantuku menemukannya? Jawab tantangan di tiga tempat: <b>Lembah Analog–Digital</b>, <b>Bengkel Komputer</b>, dan <b>Benteng Bijak</b>. Salah itu wajar, itu cara kita belajar!</div></div>
+    <button class="btn pri" id="bToMap">🗺 Buka Peta Misi</button>
+  </div>
+</section>
+
+<section id="map" class="scr" hidden>
+  <div class="card"><h2 tabindex="-1">🗺 Peta Misi</h2>
+    <p><b id="mTotal"></b></p>
+    <div class="nodes" id="nodes"></div>
+    <p class="center"><button class="btn grn" id="bFinal">🏁 Lihat Hasil Akhir</button></p>
+    <div class="badges" id="mBadges" aria-label="Lencana"></div>
+  </div>
+</section>
+
+<section id="quiz" class="scr" hidden>
+  <div class="card">
+    <div class="qtop"><span id="qLv"></span><span id="qNo"></span><span id="qScore"></span></div>
+    <div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="5" id="qProg"><i id="qBar"></i></div>
+    <div id="qbox"></div>
+  </div>
+</section>
+
+<section id="final" class="scr" hidden>
+  <div class="card"><h2 tabindex="-1">🏁 Hasil Akhir</h2><div id="fBody"></div></div>
+</section>
+</main>
+
+<script>
+"use strict";
+/* ===== BANK SOAL: 3 level x 5 soal. Kunci: a (indeks jawaban benar). ===== */
+const TAGS={konsep:"Konsep teknologi digital",alat:"Perangkat keras & lunak",contoh:"Teknologi digital sehari-hari",ipo:"Masukan – Proses – Luaran",dampak:"Manfaat, dampak & keamanan"};
+const LV=[
+[ // Level 1
+ {t:"mc",g:"konsep",q:"Teknologi digital adalah teknologi yang bekerja menggunakan ...",o:["alat elektronik","tenaga manusia saja","jarum dan roda gigi manual","kertas dan amplop"],a:0,h:"Ingat ponsel, komputer, dan televisi. Apa yang membuat mereka menyala?",e:"Teknologi digital bekerja dengan alat elektronik, seperti komputer, ponsel, atau televisi. Alat ini bisa menyimpan, mengolah, dan mengirim teks, gambar, suara, atau video."},
+ {t:"tf",g:"konsep",q:"Benar atau salah? Jam dengan jarum termasuk teknologi analog.",o:["Benar","Salah"],a:0,h:"Jam berjarum bekerja secara manual, bukan dengan layar elektronik.",e:"Benar. Teknologi yang bekerja secara manual, seperti jam berjarum atau menulis surat, disebut teknologi analog. Jam digital termasuk teknologi digital."},
+ {t:"mc",g:"alat",q:"Bagian komputer yang bisa dilihat dan disentuh, seperti layar dan papan ketik, disebut ...",o:["perangkat keras (hardware)","perangkat lunak (software)","sistem operasi","aplikasi"],a:0,h:"Kata kuncinya: bisa disentuh. Bendanya nyata dan fisik.",e:"Perangkat keras adalah semua bagian fisik komputer. Perangkat lunak berupa program yang tidak bisa disentuh."},
+ {t:"match",g:"contoh",q:"Pasangkan alat lama (analog) dengan versi digitalnya.",pairs:[["Koran cetak","Portal berita di internet"],["Radio atau pemutar kaset","Musik dari aplikasi di ponsel"],["Papan ular tangga dan dadu","Ular tangga di tablet"]],h:"Cari kegiatan yang sama: membaca, mendengarkan, atau bermain.",e:"Kegiatannya sama, caranya berbeda: koran jadi portal berita digital, radio atau kaset jadi aplikasi musik, papan ular tangga jadi permainan di tablet."},
+ {t:"mc",g:"contoh",q:"Mana yang termasuk teknologi digital yang sering ada di sekolah?",o:["Laptop atau proyektor","Papan tulis kapur","Penggaris kayu","Buku tulis kertas"],a:0,h:"Pilih alat yang memakai listrik dan bisa menampilkan gambar atau teks.",e:"Laptop dan proyektor memakai sistem elektronik. Tiga pilihan lain tidak memakai sistem elektronik."}
+],
+[ // Level 2
+ {t:"match",g:"alat",q:"Pasangkan perangkat keras dengan fungsinya.",pairs:[["Layar (monitor)","Tempat melihat gambar dan teks"],["Papan ketik (keyboard)","Alat untuk mengetik"],["Tetikus (mouse)","Menggerakkan kursor di layar"],["CPU","Memproses semua informasi"]],h:"Bayangkan CPU sebagai otak komputer.",e:"Layar menampilkan, papan ketik untuk mengetik, tetikus menggerakkan kursor, dan CPU memproses semua informasi."},
+ {t:"mc",g:"alat",q:"Mana yang termasuk perangkat lunak?",o:["Google Docs","Layar","Tetikus","Papan ketik"],a:0,h:"Perangkat lunak berupa program atau aplikasi, tidak bisa disentuh.",e:"Google Docs adalah aplikasi, jadi perangkat lunak. Windows dan Android juga perangkat lunak (sistem operasi). Layar, tetikus, dan papan ketik adalah perangkat keras."},
+ {t:"order",g:"ipo",q:"Urutkan alur kerja saat kamu mengetik di Google Docs. Ketuk langkah satu per satu.",i:["Kamu mengetik kata di papan ketik (masukan)","Komputer memproses ketikanmu dengan bantuan aplikasi (proses)","Teks muncul di layar (luaran)"],h:"Mulai dari perintah yang kamu berikan, lalu pengolahan, lalu hasil.",e:"Alurnya Masukan → Proses → Luaran: kamu memberi perintah, komputer memproses, lalu hasilnya muncul."},
+ {t:"mc",g:"ipo",q:"Video yang kamu pilih mulai diputar di layar. Bagian ini disebut ...",o:["luaran (output)","masukan (input)","proses","papan ketik"],a:0,h:"Ini hasil akhir yang bisa kamu lihat atau dengar.",e:"Luaran (output) adalah hasil yang bisa kamu lihat, dengar, atau cetak."},
+ {t:"mc",g:"konsep",q:"Mengapa komputer tidak bisa bekerja jika hanya punya perangkat keras?",o:["Karena perangkat lunak yang memberi perintah agar perangkat keras bekerja","Karena layarnya terlalu kecil","Karena papan ketiknya hilang","Karena komputer sedang istirahat"],a:0,h:"Ingat perumpamaan tubuh dan otak. Siapa yang mengatur tubuh?",e:"Perangkat keras seperti anggota tubuh, perangkat lunak seperti otak yang memberi perintah. Keduanya harus bekerja sama."}
+],
+[ // Level 3
+ {t:"mc",g:"contoh",q:"Alya mengirim pesan lewat ponsel dan pesan itu sampai dalam hitungan detik. Manfaat teknologi digital yang terlihat adalah ...",o:["lebih cepat, mudah, dan praktis","lebih lama sampai","harus memakai amplop","harus lewat kantor pos"],a:0,h:"Bandingkan dengan surat yang butuh beberapa hari.",e:"Teknologi digital membuat banyak hal lebih cepat, mudah, dan praktis. Tetap gunakan dengan bijak, ya."},
+ {t:"mc",g:"ipo",q:"Kamu ingin menulis kata di komputer, tetapi tidak menekan tombol apa pun. Apa yang terjadi?",o:["Komputer tidak tahu apa yang harus dilakukan","Komputer menulis sendiri","CPU menebak pikiranmu","Layar membuat kata sendiri"],a:0,h:"Komputer menunggu sesuatu dari kita. Apa itu?",e:"Komputer tidak bisa berpikir sendiri. Tanpa masukan (input), komputer tidak tahu harus melakukan apa."},
+ {t:"tf",g:"dampak",q:"Benar atau salah? Kata sandi boleh diberikan kepada teman baru yang kamu kenal di internet.",o:["Benar","Salah"],a:1,h:"Kata sandi itu seperti kunci rumahmu.",e:"Salah. Kata sandi harus dirahasiakan. Kalau orang lain tahu, mereka bisa masuk ke akunmu dan berpura-pura menjadi kamu."},
+ {t:"mc",g:"dampak",q:"Kamu menerima pesan dari nomor tak dikenal berisi tautan hadiah gratis. Apa yang sebaiknya kamu lakukan?",o:["Tidak mengeklik, lalu bertanya kepada orang dewasa yang kamu percaya","Langsung mengeklik agar dapat hadiah","Meneruskan tautan ke semua teman","Mengisi alamat rumah supaya hadiah dikirim"],a:0,h:"Tautan mencurigakan bisa berisi virus atau mencuri data.",e:"Jangan sembarangan mengeklik tautan. Tanyakan dulu kepada orang tua, guru, atau orang dewasa yang kamu percaya."},
+ {t:"mc",g:"dampak",q:"Kamu mengunggah foto dengan seragam dan nama sekolah terlihat jelas. Apa risikonya?",o:["Orang asing bisa mengetahui sekolahmu dan mencari tahu tentangmu","Fotonya otomatis hilang","Tidak ada risiko sama sekali","Teman jadi lupa namamu"],a:0,h:"Satu foto bisa memberi banyak petunjuk tentang dirimu.",e:"Dari satu foto, orang bisa tahu sekolah dan lingkunganmu. Ini disebut kebocoran informasi pribadi. Teknologi digital bermanfaat, tetapi kita harus hati-hati saat berbagi."}
+]];
+const Q=[];LV.forEach((l,li)=>l.forEach((q,qi)=>{q.id="q"+(li*5+qi+1);q.lv=li;Q.push(q)}));
+const LVN=[{n:"Lembah Analog–Digital",i:"🌄"},{n:"Bengkel Komputer",i:"🛠️"},{n:"Benteng Bijak",i:"🏰"}];
+const BADGES=[{n:"Penjelajah Digital",i:"🧭"},{n:"Teknisi Cilik",i:"🛠️"},{n:"Penjaga Data",i:"🛡️"},{n:"Bintang Refleksi",i:"🌟"}];
+
+/* ===== Util & penyimpanan lokal ===== */
+const $=s=>document.querySelector(s);
+const KEY="eduadv-tekdig-v1";
+const calmDefault=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+let S={res:{},ref:{a:"",b:""},snd:true,calm:calmDefault,big:false};
+try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&typeof r==="object")S=Object.assign(S,r)}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const total=()=>Object.values(S.res).reduce((a,b)=>a+b,0);
+const lvDone=l=>LV[l].every(q=>S.res[q.id]!==undefined);
+const lvPts=l=>LV[l].reduce((a,q)=>a+(S.res[q.id]||0),0);
+const starsOf=p=>p>=40?3:p>=25?2:1;
+const starStr=n=>"⭐".repeat(n)+"☆".repeat(3-n);
+const allDone=()=>[0,1,2].every(lvDone);
+const hasRef=()=>!!(S.ref.a.trim()||S.ref.b.trim());
+
+/* ===== Suara (WebAudio, tanpa file) ===== */
+let AC=null;
+function beep(seq){if(!S.snd)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();let t=AC.currentTime;seq.forEach(f=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.type="triangle";g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.18);t+=.14})}catch(e){}}
+
+/* ===== Maskot Koka (SVG inline) ===== */
+function koka(s){return `<svg viewBox="0 0 120 150" width="${s}" role="img" aria-label="Koka, robot teman belajar"><line x1="60" y1="8" x2="60" y2="24" stroke="#1b2a4a" stroke-width="4"/><circle cx="60" cy="8" r="7" fill="#f28c28" stroke="#1b2a4a" stroke-width="3"/><rect x="22" y="24" width="76" height="62" rx="26" fill="#8fb5cf" stroke="#1b2a4a" stroke-width="4"/><rect x="14" y="44" width="10" height="22" rx="5" fill="#6d97b4" stroke="#1b2a4a" stroke-width="3"/><rect x="96" y="44" width="10" height="22" rx="5" fill="#6d97b4" stroke="#1b2a4a" stroke-width="3"/><circle cx="46" cy="52" r="7" fill="#fff" stroke="#1b2a4a" stroke-width="3"/><circle cx="74" cy="52" r="7" fill="#fff" stroke="#1b2a4a" stroke-width="3"/><circle cx="47" cy="53" r="3" fill="#1b2a4a"/><circle cx="75" cy="53" r="3" fill="#1b2a4a"/><circle cx="36" cy="66" r="5" fill="#ff9aa5" opacity=".8"/><circle cx="84" cy="66" r="5" fill="#ff9aa5" opacity=".8"/><path d="M46 70 Q60 82 74 70" fill="none" stroke="#1b2a4a" stroke-width="4" stroke-linecap="round"/><rect x="30" y="90" width="60" height="44" rx="14" fill="#b8d3e5" stroke="#1b2a4a" stroke-width="4"/><rect x="44" y="100" width="32" height="22" rx="6" fill="#f6c744" stroke="#1b2a4a" stroke-width="3"/><rect x="38" y="134" width="14" height="12" rx="5" fill="#6d97b4" stroke="#1b2a4a" stroke-width="3"/><rect x="68" y="134" width="14" height="12" rx="5" fill="#6d97b4" stroke="#1b2a4a" stroke-width="3"/></svg>`}
+document.querySelectorAll(".mascot").forEach(e=>e.innerHTML=koka(+e.dataset.s||120));
+
+/* ===== Navigasi & pengaturan ===== */
+function show(id){document.querySelectorAll(".scr").forEach(e=>e.hidden=e.id!==id);window.scrollTo(0,0);if(id==="map")renderMap();if(id==="final")renderFinal();const h=document.querySelector("#"+id+" h1,#"+id+" h2");if(h){h.tabIndex=-1;h.focus()}}
+function applyPrefs(){document.body.classList.toggle("calm",S.calm);document.body.classList.toggle("big",S.big);
+ $("#bSnd").setAttribute("aria-pressed",S.snd);$("#bSnd").textContent=S.snd?"🔊 Suara hidup":"🔇 Suara mati";
+ $("#bCalm").setAttribute("aria-pressed",S.calm);$("#bBig").setAttribute("aria-pressed",S.big)}
+$("#bSnd").onclick=()=>{S.snd=!S.snd;save();applyPrefs();beep([660])};
+$("#bCalm").onclick=()=>{S.calm=!S.calm;save();applyPrefs()};
+$("#bBig").onclick=()=>{S.big=!S.big;save();applyPrefs()};
+$("#bHome").onclick=()=>show("title");
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
+$("#bStart").onclick=()=>show(Object.keys(S.res).length?"map":"story");
+$("#bHelp").onclick=()=>show("help");$("#bGoal").onclick=()=>show("goal");
+$("#bToMap").onclick=()=>show("map");
+$("#bWipe").onclick=()=>{if(confirm("Hapus semua skor, lencana, dan refleksi yang tersimpan di perangkat ini?")){try{localStorage.removeItem(KEY)}catch(e){}S={res:{},ref:{a:"",b:""},snd:S.snd,calm:S.calm,big:S.big};save();applyPrefs();show("title")}};
+$("#bFinal").onclick=()=>{if(allDone())show("final")};
+
+/* ===== Peta misi ===== */
+function renderMap(){
+ $("#mTotal").textContent="Skor total: "+total()+" / 150";
+ $("#nodes").innerHTML=LV.map((_,l)=>{const open=l===0||lvDone(l-1),d=lvDone(l);
+  return `<button class="node" data-l="${l}" ${open?"":"disabled"}><span class="ic">${open?LVN[l].i:"🔒"}</span><span><b>Level ${l+1}: ${LVN[l].n}</b><small>${open?(d?starStr(starsOf(lvPts(l)))+" · "+lvPts(l)+"/50 poin · ketuk untuk main lagi":"5 tantangan · ketuk untuk mulai"):"Selesaikan level "+l+" dulu"}</small></span></button>`}).join("");
+ document.querySelectorAll(".node").forEach(b=>b.onclick=()=>startLevel(+b.dataset.l));
+ $("#bFinal").disabled=!allDone();$("#bFinal").textContent=allDone()?"🏁 Lihat Hasil Akhir":"🏁 Selesaikan 3 level dulu";
+ $("#mBadges").innerHTML=badgeHtml();
+}
+function badgeHtml(){const on=[lvDone(0),lvDone(1),lvDone(2),hasRef()];return BADGES.map((b,i)=>`<span class="badge ${on[i]?"":"off"}">${b.i} ${b.n}${on[i]?"":" (belum)"}</span>`).join("")}
+
+/* ===== Mesin kuis ===== */
+let run=null,st=null;
+function startLevel(l){run={l,ids:shuf(LV[l]).map(q=>q.id),i:0,pts:0};show("quiz");showQ()}
+function showQ(){
+ const q=Q.find(x=>x.id===run.ids[run.i]);
+ st={q,att:0,hint:0,done:false,seq:[],dis:new Set()};
+ $("#qLv").textContent="Level "+(run.l+1)+": "+LVN[run.l].n;$("#qNo").textContent="Soal "+(run.i+1)+" dari 5";$("#qScore").textContent="Poin level: "+run.pts;
+ $("#qBar").style.width=(run.i/5*100)+"%";$("#qProg").setAttribute("aria-valuenow",run.i);
+ let body="";
+ if(q.t==="mc"||q.t==="tf"){st.opts=q.t==="tf"?q.o.map((x,k)=>({x,k})):shuf(q.o.map((x,k)=>({x,k})));
+  body=st.opts.map(o=>`<button class="opt" data-k="${o.k}">${o.x}</button>`).join("")}
+ else if(q.t==="order"){let p;do{p=shuf(q.i.map((_,k)=>k))}while(p.every((k,i)=>k===i));st.pool=p;body=`<div class="chips" id="pool"></div><p><b>Urutanmu:</b></p><ol class="seq" id="seq"></ol>`}
+ else{const rights=shuf(q.pairs.map((p,k)=>({r:p[1],k})));
+  body=q.pairs.map((p,i)=>`<div class="mrow"><label for="m${i}"><b>${p[0]}</b></label><select id="m${i}" data-i="${i}"><option value="">Pilih pasangan…</option>${rights.map(r=>`<option value="${r.k}">${r.r}</option>`).join("")}</select></div>`).join("")}
+ $("#qbox").innerHTML=`<h2 id="qText" tabindex="-1">${q.q}</h2><div id="ans">${body}</div>
+  <div class="center"><button class="btn" id="bHint">💡 Petunjuk</button>${q.t==="order"||q.t==="match"?`<button class="btn pri" id="bCheck">✔ Periksa</button>`:""}<button class="btn grn" id="bNext" hidden></button></div><div class="msg" id="msg" role="status" aria-live="polite"></div>`;
+ $("#bHint").onclick=hint;if($("#bCheck"))$("#bCheck").onclick=check;$("#bNext").onclick=next;
+ $("#ans").onclick=onAns;
+ if(q.t==="order")renderOrder();
+ $("#qText").focus();
+}
+function msg(t,c){const m=$("#msg");m.className="msg "+(c||"");m.textContent=t}
+function onAns(e){
+ if(st.done)return;const q=st.q,b=e.target.closest("button");if(!b||b.disabled)return;
+ if(b.classList.contains("opt")){const k=+b.dataset.k,ok=k===q.a;if(!ok){b.classList.add("wrong");b.disabled=true;st.dis.add(k)}judge(ok,b)}
+ else if(b.classList.contains("chip")){st.seq.push(+b.dataset.k);renderOrder()}
+ else if(b.dataset.rm!==undefined){st.seq.splice(+b.dataset.rm,1);renderOrder()}
+}
+function renderOrder(){const q=st.q;
+ $("#pool").innerHTML=st.pool.map(k=>`<button class="chip" data-k="${k}" ${st.seq.includes(k)||st.done?"disabled":""}>${q.i[k]}</button>`).join("");
+ $("#seq").innerHTML=st.seq.map((k,i)=>`<li><button data-rm="${i}" ${st.done?"disabled":""} aria-label="Langkah ${i+1}: ${q.i[k]}. Ketuk untuk melepas">${i+1}. ${q.i[k]}</button></li>`).join("")||`<li style="padding:8px">Ketuk langkah di atas sesuai urutan yang benar.</li>`;
+ const c=$("#bCheck");if(c)c.disabled=st.done||st.seq.length!==q.i.length}
+function check(){
+ if(st.done)return;const q=st.q;let ok;
+ if(q.t==="order")ok=st.seq.length===q.i.length&&st.seq.every((k,i)=>k===i);
+ else{const sel=[...document.querySelectorAll("#ans select")];if(sel.some(s=>s.value==="")){msg("Pilih semua pasangan dulu, ya.","soft");return}
+  ok=sel.every((s,i)=>+s.value===i)}
+ judge(ok)}
+function hint(){
+ if(st.done)return;const q=st.q;st.hint++;
+ if(st.hint===2&&q.t==="mc"){const w=st.opts.find(o=>o.k!==q.a&&!st.dis.has(o.k));
+  if(w){st.dis.add(w.k);const b=document.querySelector(`.opt[data-k="${w.k}"]`);b.disabled=true;b.classList.add("wrong");msg("💡 Satu pilihan yang kurang tepat sudah disingkirkan.");return}}
+ msg("💡 Petunjuk: "+q.h)}
+function judge(ok){
+ const q=st.q;st.att++;
+ if(ok){finish(st.att===1?(st.hint?8:10):5,true);return}
+ if(st.att===1){beep([300]);msg("Belum tepat, tidak apa-apa! Kamu punya satu kesempatan lagi. Coba tekan 💡 Petunjuk.","soft");if(q.t==="order"){st.seq=[];renderOrder()}}
+ else finish(0,false)}
+function finish(pts,ok){
+ const q=st.q;st.done=true;
+ S.res[q.id]=Math.max(S.res[q.id]===undefined?0:S.res[q.id],pts);save();run.pts+=pts;$("#qScore").textContent="Poin level: "+run.pts;
+ // tampilkan kunci hanya setelah selesai menjawab
+ if(q.t==="mc"||q.t==="tf")document.querySelectorAll(".opt").forEach(b=>{b.disabled=true;if(+b.dataset.k===q.a){b.classList.add("right");b.classList.remove("wrong")}});
+ if(q.t==="order"){st.seq=q.i.map((_,k)=>k);renderOrder();$("#seq").classList.add("ok")}
+ if(q.t==="match")document.querySelectorAll("#ans select").forEach((s,i)=>{s.value=i;s.disabled=true});
+ $("#bHint").disabled=true;if($("#bCheck"))$("#bCheck").disabled=true;
+ msg((ok?"✅ Tepat! +"+pts+" poin. ":"💛 Ini bagian untuk dipelajari lagi. +0 poin. ")+q.e,ok?"good":"soft");
+ beep(ok?[660,880]:[392,330]);
+ const n=$("#bNext");n.hidden=false;n.textContent=run.i<4?"Soal berikutnya ➡":"Selesai level 🎉";n.focus()}
+function next(){if(run.i<4){run.i++;showQ()}else endLevel()}
+function endLevel(){
+ const l=run.l,p=lvPts(l),s=starsOf(p);
+ $("#qBar").style.width="100%";$("#qProg").setAttribute("aria-valuenow",5);
+ $("#qbox").innerHTML=`<div class="center"><h2 id="qText" tabindex="-1">Level ${l+1} selesai! 🎉</h2><div class="mascot" data-s="110">${koka(110)}</div>
+  <p class="stars" aria-label="${s} bintang">${starStr(s)}</p><p>Poin level (terbaik): <b>${p}/50</b> · Poin permainan ini: ${run.pts}</p>
+  <p>Lencana baru: <b>${BADGES[l].i} ${BADGES[l].n}</b></p><p>Kamu hebat sudah berusaha! Boleh main lagi untuk menambah bintang.</p>
+  <button class="btn pri" id="eMap">🗺 Peta Misi</button><button class="btn" id="eAgain">🔁 Ulangi level</button>
+  ${l<2?`<button class="btn grn" id="eNext">Level ${l+2} ➡</button>`:`<button class="btn grn" id="eFin">🏁 Hasil Akhir</button>`}</div>`;
+ $("#eMap").onclick=()=>show("map");$("#eAgain").onclick=()=>startLevel(l);
+ if($("#eNext"))$("#eNext").onclick=()=>startLevel(l+1);if($("#eFin"))$("#eFin").onclick=()=>show("final");
+ beep([523,659,784]);$("#qText").focus()}
+
+/* ===== Hasil akhir, refleksi, asesmen ===== */
+function renderFinal(){
+ if(!allDone()){show("map");return}
+ const t=total();
+ const tags=Object.keys(TAGS).map(g=>{const qs=Q.filter(q=>q.g===g),p=qs.reduce((a,q)=>a+(S.res[q.id]||0),0),pc=Math.round(p/(qs.length*10)*100);
+  const st=pc>=80?"Sudah kuat 💪":pc>=50?"Hampir kuat, ulangi sedikit lagi 🙂":"Yuk, pelajari lagi bagian ini 📚";
+  return `<div class="tag"><b>${TAGS[g]}</b>: ${st}<div class="prog"><i style="width:${pc}%"></i></div><small>${p}/${qs.length*10} poin</small></div>`}).join("");
+ $("#fBody").innerHTML=`<div class="center"><div class="mascot" data-s="110">${koka(110)}</div><p class="stars">${starStr(t>=120?3:t>=75?2:1)}</p><h3>Skor total: ${t} / 150</h3></div>
+  <div class="badges" id="fBadges">${badgeHtml()}</div>
+  <h3>Kekuatanmu dan bagian yang bisa dipelajari lagi</h3>${tags}
+  <p class="msg soft" style="display:block">Skor permainan bukan satu-satunya ukuran kemampuanmu. Kamu bisa terus belajar dan mencoba lagi kapan saja.</p>
+  <h3>Refleksi</h3>
+  <label for="r1"><b>Apa hal baru yang kamu pelajari?</b></label><textarea id="r1" maxlength="300"></textarea>
+  <label for="r2"><b>Bagaimana kamu menerapkannya dalam kehidupan sehari-hari?</b></label><textarea id="r2" maxlength="300"></textarea>
+  <p><small>Jangan menulis nama lengkap, alamat, nomor telepon, atau kata sandi. Tulisanmu hanya disimpan di perangkat ini.</small></p>
+  <div class="center"><button class="btn pri" id="rSave">💾 Simpan refleksi</button><div class="msg" id="rMsg" role="status" aria-live="polite"></div>
+  <button class="btn" id="fMap">🗺 Peta Misi</button><button class="btn grn" id="fAgain">🔁 Main ulang dari awal</button></div>`;
+ $("#r1").value=S.ref.a;$("#r2").value=S.ref.b;
+ $("#rSave").onclick=()=>{const a=$("#r1").value.trim(),b=$("#r2").value.trim(),m=$("#rMsg");
+  if(!a&&!b){m.className="msg soft";m.textContent="Tulis dulu satu kalimat singkat, ya.";return}
+  S.ref={a,b};save();m.className="msg good";m.textContent="Refleksi tersimpan. Lencana Bintang Refleksi didapat! 🌟";$("#fBadges").innerHTML=badgeHtml();beep([523,659,784])};
+ $("#fMap").onclick=()=>show("map");
+ $("#fAgain").onclick=()=>{if(confirm("Main ulang dari awal? Skor dan bintang direset. Refleksimu tetap tersimpan.")){S.res={};save();show("map")}};
+}
+applyPrefs();show("title");
+</script>
+</body>
+</html>
